@@ -1,0 +1,31 @@
+version: '3'
+volumes:
+  OSMstorage:
+networks:
+  netOSM:
+    driver: bridge
+services:
+  keystone-db:
+    image: mysql
+    networks:
+      - netOSM
+    environment:
+      MYSQL_ROOT_PASSWORD: osm4u
+    ports:
+      - "3306:3306"
+    restart: always
+  keystone:
+    image: osm/keystone
+    networks:
+      - netOSM
+    environment:
+      DB_HOST: keystone-db
+      ROOT_DB_PASSWORD: osm4u
+      KEYSTONE_DB_PASSWORD: keystone
+      ADMIN_PASSWORD: keystone
+    depends_on:
+      - keystone-db
+    ports:
+      - "5000:5000"
+      - "35357:35357"
+    restart: always
